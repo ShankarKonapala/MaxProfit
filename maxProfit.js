@@ -7,31 +7,30 @@ function calculateOptimalProperties(n) {
     const PUB_EARNING = 1000;
     const COMMERCIAL_PARK_EARNING = 3000;
 
-    const dp = Array(n + 1).fill(0);
-    dp[0] = 0;
+    const solArr = Array(n + 1).fill(-Infinity);
+    solArr[0] = 0;
 
     const properties = Array(n + 1).fill(null);
 
     for (let t = 0; t <= n; t++) {
-        if (dp[t] !== 0) {
-            if (t + THEATRE_TIME <= n && dp[t] + THEATRE_EARNING > dp[t + THEATRE_TIME]) {
-                dp[t + THEATRE_TIME] = dp[t] + THEATRE_EARNING;
-                properties[t + THEATRE_TIME] = { t: 1, p: 0, c: 0 }; // Choose Theatre
+        if (solArr[t] !== -Infinity) {
+            if (t + THEATRE_TIME <= n && solArr[t] + THEATRE_EARNING > solArr[t + THEATRE_TIME]) {
+                solArr[t + THEATRE_TIME] = solArr[t] + THEATRE_EARNING;
+                properties[t + THEATRE_TIME] = { t: 1, p: 0, c: 0 }; 
             }
-            if (t + PUB_TIME <= n && dp[t] + PUB_EARNING > dp[t + PUB_TIME]) {
-                dp[t + PUB_TIME] = dp[t] + PUB_EARNING;
-                properties[t + PUB_TIME] = { t: 0, p: 1, c: 0 }; // Choose Pub
+            if (t + PUB_TIME <= n && solArr[t] + PUB_EARNING > solArr[t + PUB_TIME]) {
+                solArr[t + PUB_TIME] = solArr[t] + PUB_EARNING;
+                properties[t + PUB_TIME] = { t: 0, p: 1, c: 0 };
             }
-            if (t + COMMERCIAL_PARK_TIME <= n && dp[t] + COMMERCIAL_PARK_EARNING > dp[t + COMMERCIAL_PARK_TIME]) {
-                dp[t + COMMERCIAL_PARK_TIME] = dp[t] + COMMERCIAL_PARK_EARNING;
-                properties[t + COMMERCIAL_PARK_TIME] = { t: 0, p: 0, c: 1 }; // Choose Commercial Park
+            if (t + COMMERCIAL_PARK_TIME <= n && solArr[t] + COMMERCIAL_PARK_EARNING > solArr[t + COMMERCIAL_PARK_TIME]) {
+                solArr[t + COMMERCIAL_PARK_TIME] = solArr[t] + COMMERCIAL_PARK_EARNING;
+                properties[t + COMMERCIAL_PARK_TIME] = { t: 0, p: 0, c: 1 }; 
             }
         }
     }
 
     let time = n;
     const result = [];
-
     while (time > 0 && properties[time] !== null) {
         const { t, p, c } = properties[time];
         result.unshift(`T: ${t} P: ${p} C: ${c}`);
@@ -44,23 +43,22 @@ function calculateOptimalProperties(n) {
         }
     }
 
-    return {
+    const output = {
         timeUnit: n,
-        earnings: dp[n],
+        earnings: solArr[n],
         solutions: result.map((solution, index) => `${index + 1}. ${solution}`)
     };
+
+    return output;
 }
 
-const testCases = [7, 8, 13];
+const timeUnits = 13;
+const output = calculateOptimalProperties(timeUnits);
 
-testCases.forEach((testCase, index) => {
-    const output = calculateOptimalProperties(testCase);
-    console.log(`Test Case ${index + 1}`);
-    console.log(`Time Unit: ${output.timeUnit}`);
-    console.log(`Earnings: $${output.earnings}`);
-    console.log(`Solutions:`);
-    output.solutions.forEach((solution) => {
-        console.log(solution);
-    });
-    console.log('-------------------');
+console.log(`Time units: ${timeUnits}`);
+console.log(`Time Unit: ${output.timeUnit}`);
+console.log(`Earnings: $${output.earnings}`);
+console.log(`Solutions:`);
+output.solutions.forEach((solution) => {
+    console.log(solution);
 });
